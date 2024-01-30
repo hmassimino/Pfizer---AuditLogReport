@@ -1,0 +1,28 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+    <Popover id="myPopover" showHeader="false" contentWidth="320px" contentHeight="500px" placement="Bottom" ariaLabelledBy="master-title" afterClose="onTableSettingsClose">
+        <NavContainer id="navCon">
+            <Page id="detail" class="sapUiResponsivePadding--header" showNavButton="false" navButtonPress="onNavBack" title="Settings">
+                <subHeader>
+                    <OverflowToolbar>
+                        <SearchField liveChange=".onSearch" width="100%" />
+                    </OverflowToolbar>
+                </subHeader>
+                <List id="idList" items="{/TableColumns}" selectionChange=".onSelectionTableConfigChange" mode="MultiSelect" growing="true" growingThreshold="50" includeItemInSelection="true">
+                    <infoToolbar>
+                        <OverflowToolbar visible="false" id="idInfoToolbar">
+                            <Label id="idFilterLabel" />
+                        </OverflowToolbar>
+                    </infoToolbar>
+                    <StandardListItem title="{label}" iconDensityAware="false" iconInset="false" />
+                </List>
+              <!--   <HBox>
+                    <Button type="Accept" text="Accept" press="onSelectionChange" ariaDescribedBy="acceptButtonDescription genericButtonDescription">
+                        <layoutData>
+                            <FlexItemData growFactor="1" />
+                        </layoutData>
+                    </Button>
+                </HBox> -->
+            </Page>
+        </NavContainer>
+    </Popover>
+</core:FragmentDefinition>

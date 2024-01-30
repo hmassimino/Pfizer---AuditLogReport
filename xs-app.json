@@ -1,0 +1,39 @@
+{
+    "welcomeFile": "/index.html",
+    "authenticationMethod": "route",
+    "routes": [
+      {
+        "source": "^/resources/(.*)$",
+        "target": "/resources/$1",
+        "authenticationType": "none",
+        "destination": "ui5"
+      },
+      {
+        "source": "^/test-resources/(.*)$",
+        "target": "/test-resources/$1",
+        "authenticationType": "none",
+        "destination": "ui5"
+      },
+      {
+        "authenticationType": "xsuaa",
+        "csrfProtection": false,
+        "source": "^/auditlog_db_srv/(.*)$",
+        "destination": "auditlog_db_srv",
+        "target": "$1"
+      },
+      {
+        "authenticationType": "xsuaa",
+        "csrfProtection": false,
+        "source": "^/xsuaa_api_destination/(.*)$",
+        "destination": "xsuaa_api_destination",
+        "target": "$1"
+      },
+      {
+        "source": "^(.*)$",
+        "target": "$1",
+        "service": "html5-apps-repo-rt",
+        "authenticationType": "xsuaa"
+      }
+    ]
+  }
+  

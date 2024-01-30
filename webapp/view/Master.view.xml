@@ -1,0 +1,494 @@
+<mvc:View
+    controllerName="auditlogreport.controller.Master"
+    height="100%"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:svm="sap.ui.comp.smartvariants"
+    xmlns:table="sap.ui.table"
+    xmlns:suite.commons="sap.suite.ui.commons"
+>
+    <Shell id="shell">
+        <f:DynamicPage>
+            <f:title>
+                <f:DynamicPageTitle>
+                    <f:heading>
+                        <Title text="Audit Log Report" />
+                    </f:heading>
+                </f:DynamicPageTitle>
+            </f:title>
+            <f:header>
+                <f:DynamicPageHeader>
+                    <f:content>
+                        <fb:FilterBar
+                            showFilterConfiguration="false"
+                            id="filterbar"
+                            search="onSearch"
+                            filterChange=""
+                            afterVariantLoad=""
+                        >
+                            <fb:filterGroupItems>
+                                <fb:FilterGroupItem
+                                    name="From"
+                                    label="{i18n>From}"
+                                    groupName="Group1"
+                                    visibleInFilterBar="true"
+                                >
+                                    <fb:control>
+                                        <DateTimePicker
+                                            id="From"
+                                            value="{
+						'path':'/FromFilter',
+						'type': 'sap.ui.model.type.DateTime',
+                        'formatOptions': {
+                            'style': 'long'
+                        }
+					}"
+                                            change=""
+                                        />
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+                                <fb:FilterGroupItem
+                                    name="To"
+                                    label="{i18n>To}"
+                                    groupName="Group1"
+                                    visibleInFilterBar="true"
+                                >
+                                    <fb:control>
+                                        <DateTimePicker
+                                            id="To"
+                                            value="{
+						'path':'/ToFilter',
+						'type': 'sap.ui.model.type.DateTime',
+                        'formatOptions': {
+                            'style': 'long'
+                        }
+					}"
+                                            change=""
+                                        />
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+                                <fb:FilterGroupItem
+                                    name="User"
+                                    label="{i18n>User}"
+                                    groupName="Group1"
+                                    visibleInFilterBar="true"
+                                >
+                                    <fb:control>
+                                        <Input
+                                            type="Text"
+                                            value="{/UserFilter}"
+                                        />
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+
+                                <fb:FilterGroupItem
+                                    name="Action"
+                                    label="{i18n>Action}"
+                                    groupName="Group1"
+                                    visibleInFilterBar="true"
+                                >
+                                    <fb:control>
+                                        <!--   <Input
+                                            type="Text"
+                                            value="{/ActionFilter}"
+                                        /> -->
+                                        <ComboBox
+                                            selectedKey="{/ActionFilter}"
+                                            items="{path: '/ActionCombobox', sorter: { path: 'key' }}"
+                                        >
+                                            <core:Item
+                                                key="{Action}"
+                                                text="{Action}"
+                                            />
+                                        </ComboBox>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+
+                                <fb:FilterGroupItem
+                                    name="Service"
+                                    label="{i18n>Service}"
+                                    groupName="Group1"
+                                    visibleInFilterBar="true"
+                                >
+                                    <fb:control>
+                                        <!-- <Input
+                                            type="Text"
+                                            value="{/ServiceFilter}"
+                                        /> -->
+                                        <ComboBox
+                                            selectedKey="{/ServiceFilter}"
+                                            items="{path: '/ServiceCombobox', sorter: { path: 'key' }}"
+                                        >
+                                            <core:Item
+                                                key="{Service}"
+                                                text="{Service}"
+                                            />
+                                        </ComboBox>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+                            </fb:filterGroupItems>
+                        </fb:FilterBar>
+                    </f:content>
+                </f:DynamicPageHeader>
+            </f:header>
+            <f:content>
+                <IconTabBar
+                        id="IconTabLogs"
+                        stretchContentHeight="true"
+                        expanded="{device>/isNoPhone}"
+                        class="sapUiResponsiveContentPadding">
+                    <items>
+                        <IconTabFilter text="{i18n>Logs}"
+                                key="LOGS">
+                            <ScrollContainer
+                                width="auto"
+                                horizontal="false"
+                            >
+                            <!-- filter="filterWithoutReview" -->
+                            <table:Table
+                                id="auditLogTable"
+                                rows="{path:'/Alogs',  sorter: [{
+                                                path: 'Date', 
+                                                descending: 'false', 
+                                                group: 'true'
+                                            }]}"
+
+                                visibleRowCount="10"
+                                enableCustomFilter="false"
+                                selectionMode="Single"
+                                selectionBehavior="RowOnly"
+                                rowSelectionChange=""
+                                ariaLabelledBy="title"
+                            >
+                                <!-- rowsUpdated="onOITrowsUpdated" -->
+                                <table:extension>
+                                    <OverflowToolbar style="Clear">
+                                        <ToolbarSpacer />
+
+                                        <Button
+                                            icon="sap-icon://clear-all"
+                                            tooltip="Clear all sortings"
+                                            press="clearAllSortings"
+                                        />
+                                        <Button
+                                            id="clearAllFiltersBtn"
+                                            icon="sap-icon://clear-filter"
+                                            tooltip="Clear all filters"
+                                            press="clearAllFiltersOpen"
+                                        />
+
+                                        <Button
+                                            icon="sap-icon://action-settings"
+                                            press="onSettingsTablePress"
+                                        >
+                                            <layoutData>
+                                                <OverflowToolbarLayoutData
+                                                    priority="NeverOverflow"
+                                                />
+                                            </layoutData>
+                                            <customData>
+                                                <core:CustomData
+                                                    key="id"
+                                                    value='auditLogTable'
+                                                />
+                                            </customData>
+                                        </Button>
+                                    </OverflowToolbar>
+                                </table:extension>
+
+                                <table:columns>
+                                    <!--<table:Column filterProperty="Description" width="20rem" sortProperty="Description">
+                            <Label text="{i18n>DESCRIPTION}" />
+                            <table:template>
+                                <Text text="{Description}" wrapping="true" />
+                            </table:template>
+                        </table:Column>-->
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="DATEid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Date"
+                                        sortProperty="Date"
+                                    >
+                                        <Label text="{i18n>DATE}" />
+                                        <!--  <table:template>
+                                            <Text
+                                                text="{path: 'Date', type: 'sap.ui.model.type.Date'}"
+                                            />
+                                        </table:template> -->
+                                        <table:template>
+                                            <Text
+                                                text="{
+                                                    path: 'Date',
+                                                    type: 'sap.ui.model.type.DateTime',
+                                                    formatOptions: {
+                                                        style: 'full',
+                                                        pattern: 'dd/MM/yyyy HH:mm:ss'
+                                                    }
+                                                }"
+                                            />
+                                        </table:template>
+                                    </table:Column>
+
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="USERid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="User"
+                                        sortProperty="User"
+                                    >
+                                        <Label text="{i18n>USER}" />
+                                        <table:template>
+                                            <Text text="{User}" />
+                                        </table:template>
+                                    </table:Column>
+
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="SERVICEid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Service"
+                                        sortProperty="Service"
+                                    >
+                                        <Label text="{i18n>SERVICE}" />
+                                        <table:template>
+                                            <Text text="{Service}" />
+                                        </table:template>
+                                    </table:Column>
+
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="CATEGORYid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Category"
+                                        sortProperty="Category"
+                                    >
+                                        <Label text="{i18n>CATEGORY}" />
+                                        <table:template>
+                                            <Text text="{Category}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="SUBACCOUNTid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Subaccount"
+                                        sortProperty="Subaccount"
+                                    >
+                                        <Label text="{i18n>SUBACCOUNT}" />
+                                        <table:template>
+                                            <Text text="{Subaccount}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="false"
+                                        id="ACCOUNTid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Account"
+                                        sortProperty="Account"
+                                    >
+                                        <Label text="{i18n>ACCOUNT}" />
+                                        <table:template>
+                                            <Text text="{Account}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="false"
+                                        id="APPLICATIONid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Application"
+                                        sortProperty="Application"
+                                    >
+                                        <Label text="{i18n>APPLICATION}" />
+                                        <table:template>
+                                            <Text text="{Application}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="ACTIONid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Action"
+                                        sortProperty="Action"
+                                    >
+                                        <Label text="{i18n>ACTION}" />
+                                        <table:template>
+                                            <Text text="{Action}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="OBJECTid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Object"
+                                        sortProperty="Object"
+                                    >
+                                        <Label text="{i18n>OBJECT}" />
+                                        <table:template>
+                                            <Text text="{Object}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="OBJECTRELATEDid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="ObjectRelated"
+                                        sortProperty="ObjectRelated"
+                                    >
+                                        <Label text="{i18n>OBJECTRELATED}" />
+                                        <table:template>
+                                            <Text text="{ObjectRelated}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="OBJECTTYPEid"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="ObjectType"
+                                        sortProperty="ObjectType"
+                                    >
+                                        <Label text="{i18n>OBJECTTYPE}" />
+                                        <table:template>
+                                            <Text text="{ObjectType}" />
+                                        </table:template>
+                                    </table:Column>
+                                </table:columns>
+                            </table:Table>
+                        </ScrollContainer>
+                        </IconTabFilter>
+                        <IconTabFilter
+                            text="{i18n>ErrorLogs}"
+                            key="ERROR_LOGS">
+                            <ScrollContainer
+                                width="auto"
+                                horizontal="false"
+                            >
+                            <!-- filter="filterWithoutReview" -->
+                            <table:Table
+                                id="auditLogTableErrors"
+                                rows="{path:'/ErrorLogs',  sorter: [{
+                                                path: 'Date', 
+                                                descending: 'false', 
+                                                group: 'true'
+                                            }]}"
+
+                                visibleRowCount="10"
+                                enableCustomFilter="false"
+                                selectionMode="Single"
+                                selectionBehavior="RowOnly"
+                                rowSelectionChange=""
+                                ariaLabelledBy="title"
+                            >
+                                <table:extension>
+                                    <OverflowToolbar style="Clear">
+                                        <ToolbarSpacer />
+
+                                        <Button
+                                            icon="sap-icon://clear-all"
+                                            tooltip="Clear all sortings"
+                                            press="clearAllSortings"
+                                        />
+                                        <Button
+                                            id="clearAllFiltersBtnErrorLogs"
+                                            icon="sap-icon://clear-filter"
+                                            tooltip="Clear all filters"
+                                            press="clearAllFiltersOpen"
+                                        />
+                                    </OverflowToolbar>
+                                </table:extension>
+
+                                <table:columns>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="DATEidErrors"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Date"
+                                        sortProperty="Date"
+                                    >
+                                        <Label text="{i18n>DATE}" />
+                                        <table:template>
+                                            <Text
+                                                text="{
+                                                    path: 'Date',
+                                                    type: 'sap.ui.model.type.DateTime',
+                                                    formatOptions: {
+                                                        style: 'full',
+                                                        pattern: 'dd/MM/yyyy HH:mm:ss'
+                                                    }
+                                                }"
+                                            />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        minWidth="80"
+                                        visible="true"
+                                        id="SERVICEidErrors"
+                                        width="auto"
+                                        vAlign="Middle"
+                                        filterProperty="Service"
+                                        sortProperty="Service"
+                                    >
+                                        <Label text="{i18n>SERVICE}" />
+                                        <table:template>
+                                            <Text text="{Service}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        visible="true"
+                                        width="auto"
+                                        filterProperty="ErrorMessage"
+                                        sortProperty="ErrorMessage"
+                                    >
+                                        <Label text="{i18n>ErrorMessage}" />
+                                        <table:template>
+                                            <Text text="{ErrorMessage}" />
+                                        </table:template>
+                                    </table:Column>
+                                    <table:Column
+                                        visible="true"
+                                        width="auto"
+                                        filterProperty="Message"
+                                        sortProperty="Message"
+                                    >
+                                        <Label text="{i18n>Message}" />
+                                        <table:template>
+                                            <Text text="{Message}" />
+                                        </table:template>
+                                    </table:Column>
+                                </table:columns>
+                            </table:Table>
+                        </ScrollContainer>
+                        </IconTabFilter>
+                    </items>
+                </IconTabBar>
+            </f:content>
+        </f:DynamicPage>
+    </Shell>
+</mvc:View>
